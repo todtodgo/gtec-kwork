@@ -641,7 +641,7 @@ function switchTab(tab){
 
 async function api(body){
   if(!API_URL) throw new Error('API URL이 설정되지 않았습니다.');
-  const res=await fetch(API_URL,{method:'POST',body:JSON.stringify(body),headers:{'Content-Type':'application/json'}});
+  const res=await fetch(API_URL,{method:'POST',body:JSON.stringify(body),headers:{'Content-Type':'text/plain'}});
   return res.json();
 }
 
