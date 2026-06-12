@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>경기과학기술대학교 외국인 유학생 취업연계 시스템</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue:#1a5fa8;--bl:#e8f0fb;--green:#1a7a4a;--gl:#e6f4ed;
+  --amb:#fef3e2;--ambc:#92540a;--red:#c0392b;--redl:#fdf0f0;
+  --bg:#ffffff;--bg2:#f5f5f5;--border:#e0e0e0;--text:#111;--text2:#555;--text3:#999;
+  --radius:8px;--radius-lg:12px;--radius-md:8px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#1a1a1a;--bg2:#2a2a2a;--border:#3a3a3a;--text:#eee;--text2:#aaa;--text3:#666;}
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);}
+
+/* NAV */
+.top-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0.5px solid var(--border);background:var(--bg);}
+.logo{display:flex;align-items:center;gap:9px;}
+.logo-mark{width:34px;height:34px;border-radius:8px;background:var(--blue);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;}
+.logo-text strong{display:block;font-size:13px;font-weight:600;color:var(--text);}
+.logo-text span{font-size:11px;color:var(--text2);}
+.nav-right{display:flex;align-items:center;gap:6px;}
+.nbadge{padding:3px 9px;border-radius:20px;font-size:11px;display:flex;align-items:center;gap:4px;}
+.nb-admin{background:var(--bl);color:var(--blue);}
+.nb-user{background:var(--gl);color:var(--green);}
+
+/* TAB ★모바일: 스크롤 가능, 스크롤바 숨김 */
+.tab-bar{display:flex;border-bottom:0.5px solid var(--border);background:var(--bg2);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{flex:1;min-width:62px;padding:12px 3px;font-size:11px;border:none;background:none;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;transition:all .15s;position:relative;}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:600;background:var(--bg);}
+.badge-count{position:absolute;top:5px;right:3px;background:#e74c3c;color:#fff;border-radius:10px;font-size:10px;padding:1px 4px;font-weight:600;}
+
+.panel{display:none;padding:14px;}
+.panel.active{display:block;}
+
+/* STAT */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+@media(min-width:480px){.stat-grid{grid-template-columns:repeat(4,1fr);}}
+.stat-card{background:var(--bg2);border-radius:var(--radius-md);padding:11px 12px;}
+.stat-card .lbl{font-size:11px;color:var(--text2);margin-bottom:3px;}
+.stat-card .val{font-size:22px;font-weight:600;}
+.stat-card .sub{font-size:11px;color:var(--text3);margin-top:1px;}
+
+/* URL BOX */
+.url-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:9px 10px;display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.url-lbl{font-size:12px;font-weight:600;min-width:60px;flex-shrink:0;}
+.url-txt{font-size:11px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* FORM */
+.form-wrap{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px;}
+.fsec{font-size:12px;font-weight:600;color:var(--blue);padding:5px 9px;background:var(--bl);border-radius:var(--radius-md);margin:14px 0 10px;display:flex;align-items:center;gap:5px;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field label{font-size:12px;color:var(--text2);}
+.req{color:var(--red);margin-left:2px;}
+
+/* ★ 수정1: font-size 16px (iOS 자동줌 방지) */
+.field input,.field select,.field textarea{
+  font-size:16px;
+  padding:11px 12px;
+  border:0.5px solid var(--border);
+  border-radius:var(--radius-md);
+  background:var(--bg);
+  color:var(--text);
+  width:100%;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.field select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;
+}
+.field textarea{resize:vertical;min-height:70px;line-height:1.5;}
+
+/* ★ 수정2: 반응형 그리드 (모바일 1열 → 480px+ 2열) */
+.fgrid{display:grid;grid-template-columns:1fr;gap:10px;}
+@media(min-width:480px){.fgrid{grid-template-columns:1fr 1fr;}}
+
+/* ★ fgrid3: 모바일 1열 → 480px+ 2열 → 640px+ 3열 */
+.fgrid3{display:grid;grid-template-columns:1fr;gap:10px;}
+@media(min-width:480px){.fgrid3{grid-template-columns:1fr 1fr;}}
+@media(min-width:640px){.fgrid3{grid-template-columns:1fr 1fr 1fr;}}
+.ffull{grid-column:1/-1;}
+
+/* ★ 수정3: 라디오버튼 모바일 카드형, 태블릿+ 가로 나열 */
+.radio-group{display:flex;flex-direction:column;gap:7px;margin-top:5px;}
+.radio-group label{display:flex;align-items:center;gap:12px;font-size:15px;padding:11px 13px;border:0.5px solid var(--border);border-radius:var(--radius-md);cursor:pointer;color:var(--text);background:var(--bg);}
+.radio-group input[type=radio]{width:20px;height:20px;accent-color:var(--blue);flex-shrink:0;}
+@media(min-width:480px){
+  .radio-group{flex-direction:row;flex-wrap:wrap;gap:8px;}
+  .radio-group label{padding:6px 11px;font-size:13px;border:none;background:none;}
+  .radio-group input[type=radio]{width:15px;height:15px;}
+}
+
+/* 근무일수 라디오 */
+.workdays-group{display:flex;flex-direction:column;gap:7px;margin-top:5px;}
+.workdays-group label{display:flex;align-items:center;gap:12px;font-size:15px;padding:11px 13px;border:0.5px solid var(--border);border-radius:var(--radius-md);cursor:pointer;color:var(--text);}
+.workdays-group input[type=radio]{width:20px;height:20px;accent-color:var(--blue);flex-shrink:0;}
+@media(min-width:480px){
+  .workdays-group{flex-direction:row;flex-wrap:wrap;gap:8px;}
+  .workdays-group label{padding:6px 11px;font-size:13px;border:none;}
+  .workdays-group input[type=radio]{width:15px;height:15px;}
+}
+#workdays-custom{display:none;width:100%;font-size:16px;padding:11px 12px;margin-top:8px;}
+
+/* ★ 수정4: 체크박스 22px, min-height 44px */
+.check-row{display:flex;align-items:center;gap:12px;font-size:14px;cursor:pointer;color:var(--text);margin-top:8px;padding:4px 0;min-height:44px;}
+.check-row input[type=checkbox]{width:22px;height:22px;accent-color:var(--blue);flex-shrink:0;cursor:pointer;}
+.consent-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.6;max-height:80px;overflow-y:auto;}
+.consent-sect{margin-top:12px;border:0.5px solid var(--border);border-radius:var(--radius-md);padding:13px;background:var(--bg2);}
+.consent-title{font-size:12px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+
+/* ★ 수정5: 버튼 min-height 48px */
+.btn-p{background:var(--blue);color:#fff;border:none;padding:13px 20px;border-radius:var(--radius-md);font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;width:100%;}
+.btn-p:hover{background:#154d8c;}
+.btn-s{background:none;border:0.5px solid var(--border);padding:12px 16px;border-radius:var(--radius-md);font-size:15px;cursor:pointer;color:var(--text);min-height:48px;}
+.submit-row{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+@media(min-width:480px){.submit-row{flex-direction:row;justify-content:flex-end;}.btn-p{width:auto;}}
+.btn-full{width:100%;padding:14px;border:none;border-radius:var(--radius-md);font-size:15px;font-weight:600;cursor:pointer;margin-top:6px;min-height:48px;}
+.bf-blue{background:var(--blue);color:#fff;}
+.bf-green{background:var(--green);color:#fff;}
+
+/* NOTICE */
+.notice{padding:9px 11px;font-size:12px;margin-bottom:12px;display:flex;align-items:flex-start;gap:7px;border-radius:var(--radius-md);border:0.5px solid;line-height:1.5;}
+.n-blue{background:var(--bl);border-color:#b8d0f0;color:var(--blue);}
+.n-green{background:var(--gl);border-color:#a0d8b8;color:var(--green);}
+.n-amber{background:var(--amb);border-color:#f0c878;color:var(--ambc);}
+.n-red{background:var(--redl);border-color:#f5b8b8;color:var(--red);}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;align-items:center;}
+.toolbar input[type=text]{flex:1;min-width:130px;font-size:16px;padding:10px 12px;border:0.5px solid var(--border);border-radius:var(--radius-md);background:var(--bg);color:var(--text);}
+.toolbar select{font-size:14px;padding:9px 10px;border-radius:var(--radius-md);border:0.5px solid var(--border);background:var(--bg);color:var(--text);}
+.btn-sm{font-size:12px;padding:9px 12px;border-radius:var(--radius-md);border:0.5px solid var(--border);background:none;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:4px;white-space:nowrap;min-height:44px;}
+.btn-sm:hover{background:var(--bg2);}
+.bsm-p{background:var(--blue)!important;color:#fff!important;border-color:var(--blue)!important;}
+.bsm-g{background:var(--green)!important;color:#fff!important;border-color:var(--green)!important;}
+.bsm-r{color:var(--red)!important;border-color:#f5c0c0!important;}
+.bsm-o{background:#e67e22!important;color:#fff!important;border-color:#e67e22!important;}
+
+/* SEL BAR */
+.sel-bar{display:none;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--bl);border:0.5px solid #b8d0f0;border-radius:var(--radius-md);margin-bottom:10px;font-size:13px;color:var(--blue);}
+.sel-bar.on{display:flex;}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border:0.5px solid var(--border);border-radius:var(--radius-md);-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:var(--bg2);padding:9px 8px;text-align:left;font-weight:600;border-bottom:0.5px solid var(--border);white-space:nowrap;color:var(--text2);}
+td{padding:9px 8px;border-bottom:0.5px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr.sel-row td{background:#eef4ff;}
+/* ★ 수정4: 테이블 내 체크박스 */
+input[type=checkbox]{width:22px;height:22px;cursor:pointer;accent-color:var(--blue);}
+.tag{font-size:11px;padding:2px 7px;border-radius:20px;display:inline-flex;align-items:center;}
+.t-b{background:var(--bl);color:var(--blue);}
+.t-g{background:var(--gl);color:var(--green);}
+.t-gr{background:var(--bg2);color:var(--text2);}
+.t-a{background:var(--amb);color:var(--ambc);}
+.t-r{background:var(--redl);color:var(--red);}
+
+/* LOGIN */
+.login-wrap{max-width:400px;margin:16px auto;}
+.login-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:20px;}
+.login-title{font-size:15px;font-weight:600;margin-bottom:3px;}
+.login-sub{font-size:12px;color:var(--text2);margin-bottom:14px;}
+.lfield{margin-bottom:10px;}
+.lfield label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;}
+.lfield input{width:100%;font-size:16px;padding:11px 12px;border:0.5px solid var(--border);border-radius:var(--radius-md);background:var(--bg);color:var(--text);}
+.lerr{font-size:12px;color:var(--red);margin-top:6px;display:none;}
+
+/* ★ 수정6: 모달 바텀시트 (모바일) → 640px+ 중앙 팝업 */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:flex-end;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg);border-radius:16px 16px 0 0;width:100%;padding:20px;border-top:0.5px solid var(--border);max-height:88vh;overflow-y:auto;}
+@media(min-width:640px){
+  .modal-bg{align-items:center;padding:40px 16px;}
+  .modal{border-radius:var(--radius-lg);max-height:none;max-width:640px;}
+}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.modal-hdr h3{font-size:15px;font-weight:600;}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text2);font-size:18px;padding:6px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;}
+.loading{text-align:center;padding:28px;color:var(--text2);font-size:13px;}
+.empty{text-align:center;padding:30px;color:var(--text3);font-size:13px;}
+.pw-hint{font-size:11px;color:var(--text3);margin-top:3px;}
+
+/* 사진 업로드 */
+.photo-upload-wrap{display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg2);border-radius:var(--radius-md);border:0.5px solid var(--border);}
+.photo-preview{width:68px;height:84px;border-radius:var(--radius-md);background:var(--bg);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.photo-preview img{width:100%;height:100%;object-fit:cover;}
+.photo-ph{font-size:26px;color:var(--text3);}
+.photo-upload-info{flex:1;}
+.photo-title{font-size:12px;font-weight:600;margin-bottom:3px;}
+.photo-desc{font-size:11px;color:var(--text2);line-height:1.5;}
+.photo-btn{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:10px 13px;background:var(--blue);color:#fff;border-radius:var(--radius-md);font-size:13px;cursor:pointer;min-height:44px;}
+.photo-remove{font-size:12px;color:var(--red);cursor:pointer;margin-top:5px;display:none;}
+#s-photo-input{display:none;}
+
+/* REQ CARD */
+.req-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:9px;}
+.req-changes{background:var(--bg2);border-radius:var(--radius-md);padding:9px 11px;font-size:11px;line-height:1.7;margin:8px 0;}
+.req-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:9px;}
+
+/* MATCH */
+.match-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:13px;margin-bottom:9px;}
+.match-inner{display:flex;align-items:center;gap:8px;}
+.match-side{flex:1;min-width:0;}
+.ms-label{font-size:11px;color:var(--text2);margin-bottom:2px;}
+.ms-name{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ms-sub{font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.match-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:9px;}
+.acct-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.cnt-info{font-size:11px;color:var(--text3);margin-top:7px;}
+#card-canvas-wrap{position:fixed;left:-9999px;top:0;width:680px;}
+.upload-ok{background:var(--gl);color:var(--green);border:0.5px solid #a0d8b8;border-radius:var(--radius-md);padding:11px 13px;font-size:13px;margin-top:10px;}
+.upload-err{background:var(--redl);color:var(--red);border:0.5px solid #f5b8b8;border-radius:var(--radius-md);padding:11px 13px;font-size:13px;margin-top:10px;}
+</style>
+</head>
+<body>
+
+<div id="app">
+<div class="top-nav">
+  <div class="logo">
+    <div class="logo-mark" style="font-size:10px;letter-spacing:-0.5px;">GTEC</div>
+    <div class="logo-text">
+      <strong>경기과학기술대학교</strong>
+      <span>외국인 유학생 취업연계 시스템</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div id="admin-badge" style="display:none;" class="nbadge nb-admin"><i class="ti ti-shield-check"></i><span id="admin-name-disp"></span></div>
+    <div id="user-badge" style="display:none;" class="nbadge nb-user"><i class="ti ti-user-check"></i><span id="user-name-disp"></span></div>
+    <button class="btn-sm" id="logout-btn" style="display:none;" onclick="doLogout()"><i class="ti ti-logout"></i></button>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" id="tab-home" onclick="switchTab('home')"><i class="ti ti-home"></i> 홈</button>
+  <button class="tab-btn" id="tab-reg-company" onclick="switchTab('reg-company')"><i class="ti ti-building-plus"></i> 기업등록</button>
+  <button class="tab-btn" id="tab-reg-student" onclick="switchTab('reg-student')"><i class="ti ti-user-plus"></i> 학생등록</button>
+  <button class="tab-btn" id="tab-myinfo" onclick="switchTab('myinfo')"><i class="ti ti-edit"></i> 수정요청</button>
+  <button class="tab-btn admin-only" id="tab-requests" onclick="switchTab('requests')" style="display:none;"><i class="ti ti-bell"></i> 요청<span class="badge-count" id="req-badge" style="display:none;">0</span></button>
+  <button class="tab-btn admin-only" id="tab-companies" onclick="switchTab('companies')" style="display:none;"><i class="ti ti-building"></i> 기업</button>
+  <button class="tab-btn admin-only" id="tab-students" onclick="switchTab('students')" style="display:none;"><i class="ti ti-users"></i> 학생</button>
+  <button class="tab-btn admin-only" id="tab-matches" onclick="switchTab('matches')" style="display:none;"><i class="ti ti-link"></i> 연계</button>
+  <button class="tab-btn admin-only" id="tab-admin" onclick="switchTab('admin')" style="display:none;"><i class="ti ti-settings"></i> 관리</button>
+  <button class="tab-btn" id="tab-login" onclick="switchTab('login')"><i class="ti ti-lock"></i> 관리자</button>
+</div>
+
+<!-- 홈 -->
+<div class="panel active" id="panel-home">
+  <div id="api-warn" class="notice n-amber" style="display:none;"><i class="ti ti-alert-triangle"></i> Apps Script URL이 설정되지 않았습니다.</div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="lbl"><i class="ti ti-building"></i> 등록 기업</div><div class="val" id="h-comp">-</div><div class="sub">개 기업</div></div>
+    <div class="stat-card"><div class="lbl"><i class="ti ti-users"></i> 등록 학생</div><div class="val" id="h-stu">-</div><div class="sub">명</div></div>
+    <div class="stat-card"><div class="lbl"><i class="ti ti-link"></i> 취업연계</div><div class="val" id="h-match">-</div><div class="sub">건 성공</div></div>
+    <div class="stat-card"><div class="lbl"><i class="ti ti-calendar"></i> 오늘</div><div class="val" style="font-size:14px;" id="h-date">-</div></div>
+  </div>
+  <div style="font-size:13px;font-weight:600;margin-bottom:8px;">입력 URL 공유</div>
+  <div class="notice n-green"><i class="ti ti-share"></i> 아래 링크를 기업/학생에게 공유하세요.</div>
+  <div class="url-box"><span class="url-lbl">기업 등록</span><span class="url-txt" id="url-c">-</span><button class="btn-sm" onclick="copyURL('company')"><i class="ti ti-copy"></i></button></div>
+  <div class="url-box"><span class="url-lbl">학생 등록</span><span class="url-txt" id="url-s">-</span><button class="btn-sm" onclick="copyURL('student')"><i class="ti ti-copy"></i></button></div>
+  <div class="url-box"><span class="url-lbl">수정 요청</span><span class="url-txt" id="url-m">-</span><button class="btn-sm" onclick="copyURL('myinfo')"><i class="ti ti-copy"></i></button></div>
+  <div id="copy-toast" style="display:none;font-size:12px;color:var(--green);margin-top:5px;"><i class="ti ti-check"></i> 복사되었습니다.</div>
+</div>
+
+<!-- 기업 등록 -->
+<div class="panel" id="panel-reg-company">
+  <div class="form-wrap">
+    <div class="notice n-blue"><i class="ti ti-shield-check"></i> 수집 정보는 K-Work 등록 및 취업연계 목적으로만 활용됩니다.</div>
+    <div class="fsec"><i class="ti ti-building"></i> 업체 현황</div>
+    <div class="fgrid">
+      <div class="field"><label>회사명 <span class="req">*</span></label><input type="text" id="c-name" autocomplete="organization"></div>
+      <div class="field"><label>사업자등록번호 <span class="req">*</span></label><input type="text" id="c-bizno" placeholder="000-00-00000" inputmode="numeric"></div>
+      <div class="field ffull"><label>소재지 <span class="req">*</span></label><input type="text" id="c-address" autocomplete="street-address"></div>
+      <div class="field"><label>대표자</label><input type="text" id="c-ceo"></div>
+      <div class="field"><label>전화번호</label><input type="tel" id="c-tel" placeholder="031-000-0000" autocomplete="tel"></div>
+      <div class="field"><label>홈페이지</label><input type="url" id="c-web" placeholder="https://" inputmode="url"></div>
+      <div class="field"><label>설립년도</label><input type="text" id="c-year" placeholder="2010" inputmode="numeric"></div>
+    </div>
+    <div class="fsec"><i class="ti ti-category"></i> 기업 구분</div>
+    <div class="field"><label>구분 <span class="req">*</span></label>
+      <div class="radio-group">
+        <label><input type="radio" name="c-type" value="대기업"> 대기업</label>
+        <label><input type="radio" name="c-type" value="중견기업"> 중견기업</label>
+        <label><input type="radio" name="c-type" value="중소기업" checked> 중소기업</label>
+        <label><input type="radio" name="c-type" value="공공기관"> 공공기관</label>
+        <label><input type="radio" name="c-type" value="기타"> 기타</label>
+      </div>
+    </div>
+    <div class="fgrid" style="margin-top:10px;">
+      <div class="field"><label>업종</label><input type="text" id="c-industry" placeholder="예) 제조업, IT서비스"></div>
+      <div class="field"><label>사업내용</label><input type="text" id="c-biz"></div>
+      <div class="field"><label>자본금 (만원)</label><input type="text" id="c-capital" inputmode="numeric"></div>
+      <div class="field"><label>매출액 (만원)</label><input type="text" id="c-revenue" inputmode="numeric"></div>
+      <div class="field"><label>근로자수 (명)</label><input type="text" id="c-workers" inputmode="numeric"></div>
+    </div>
+    <div class="fsec"><i class="ti ti-heart-handshake"></i> 근무 조건</div>
+    <div class="fgrid">
+      <div class="field"><label>임금 (월, 만원)</label><input type="text" id="c-salary" inputmode="numeric"></div>
+      <div class="field"><label>근무시간</label><input type="text" id="c-hours" placeholder="09:00~18:00"></div>
+      <div class="field ffull">
+        <label>근무일수 <span class="req">*</span></label>
+        <div class="workdays-group">
+          <label><input type="radio" name="c-workdays" value="주5일" checked onchange="toggleWD()"> 주5일</label>
+          <label><input type="radio" name="c-workdays" value="주6일" onchange="toggleWD()"> 주6일</label>
+          <label><input type="radio" name="c-workdays" value="기타" onchange="toggleWD()"> 기타 (직접 입력)</label>
+        </div>
+        <input type="text" id="workdays-custom" placeholder="예) 격주 토요일 근무">
+      </div>
+      <div class="field"><label>보험사항</label><input type="text" id="c-insurance" placeholder="4대보험"></div>
+      <div class="field ffull"><label>복리후생</label><textarea id="c-welfare"></textarea></div>
+    </div>
+    <div class="fsec"><i class="ti ti-briefcase"></i> 채용 정보</div>
+    <div class="fgrid">
+      <div class="field ffull"><label>직종 <span class="req">*</span></label><input type="text" id="c-job" placeholder="예) 생산직, 품질관리, 기계조작, IT개발, 사무행정, 통번역, 물류·포장, 용접·도장, 식품제조"></div>
+      <div class="field"><label>모집인원 (명)</label><input type="text" id="c-headcount" inputmode="numeric"></div>
+      <div class="field"><label>고용형태</label><select id="c-emptype"><option>정규직</option><option>계약직</option><option>인턴</option><option>파트타임</option></select></div>
+      <div class="field"><label>채용마감일</label><input type="date" id="c-deadline"></div>
+      <div class="field ffull"><label>우대사항</label><textarea id="c-req"></textarea></div>
+    </div>
+    <div class="fsec"><i class="ti ti-phone"></i> 채용 담당자</div>
+    <div class="fgrid3">
+      <div class="field"><label>성명 <span class="req">*</span></label><input type="text" id="c-cname" autocomplete="name"></div>
+      <div class="field"><label>전화번호</label><input type="tel" id="c-ctel" autocomplete="tel"></div>
+      <div class="field"><label>이메일 <span class="req">*</span></label><input type="email" id="c-cemail" inputmode="email" autocomplete="email"></div>
+    </div>
+    <div class="fsec"><i class="ti ti-lock"></i> 수정요청용 비밀번호</div>
+    <div class="fgrid">
+      <div class="field"><label>비밀번호 <span class="req">*</span></label><input type="password" id="c-pw" autocomplete="new-password"><div class="pw-hint">수정/삭제 요청 시 본인 확인에 사용됩니다.</div></div>
+      <div class="field"><label>비밀번호 확인 <span class="req">*</span></label><input type="password" id="c-pw2" autocomplete="new-password"></div>
+    </div>
+    <div class="consent-sect">
+      <div class="consent-title"><i class="ti ti-shield-lock"></i> 개인정보 수집·이용 동의 <span class="req">*</span></div>
+      <div class="consent-box">경기과학기술대학교는 인재추천 의뢰서 게시와 관련하여 회사정보 및 개인정보를 수집·이용합니다. 수집 항목: 회사명, 사업자등록번호, 주소, 담당자 정보 등. 보유 기간: 채용 마감일까지, 이후 5년간 보관.</div>
+      <label class="check-row"><input type="checkbox" id="c-consent"> 개인정보 수집·이용에 동의합니다. <span style="color:var(--red);font-size:11px;">(필수)</span></label>
+    </div>
+    <div class="submit-row">
+      <button class="btn-s" onclick="resetForm('company')"><i class="ti ti-refresh"></i> 초기화</button>
+      <button class="btn-p" onclick="submitCompany()"><i class="ti ti-send"></i> 등록 신청</button>
+    </div>
+  </div>
+</div>
+
+<!-- 학생 등록 -->
+<div class="panel" id="panel-reg-student">
+  <div class="form-wrap">
+    <div class="fsec"><i class="ti ti-camera"></i> 증명사진 <span style="font-weight:400;color:var(--text2);font-size:11px;">(선택)</span></div>
+    <div class="photo-upload-wrap">
+      <div class="photo-preview" id="photo-preview-wrap"><div class="photo-ph"><i class="ti ti-user"></i></div></div>
+      <div class="photo-upload-info">
+        <div class="photo-title">증명사진 등록</div>
+        <div class="photo-desc">• JPG, PNG / 5MB 이하<br>• 증명사진 또는 단정한 사진 권장<br>• 등록하면 기업 추천 시 활용됩니다</div>
+        <label class="photo-btn" for="s-photo-input"><i class="ti ti-upload"></i> 사진 선택</label>
+        <input type="file" id="s-photo-input" accept="image/jpeg,image/png" onchange="previewPhoto(this)">
+        <div class="photo-remove" id="photo-remove-btn" onclick="removePhoto()">✕ 사진 삭제</div>
+      </div>
+    </div>
+    <div class="fsec"><i class="ti ti-user"></i> 기본 정보</div>
+    <div class="fgrid">
+      <div class="field"><label>성명 (한국어) <span class="req">*</span></label><input type="text" id="s-nameko" autocomplete="name"></div>
+      <div class="field"><label>성명 (영문)</label><input type="text" id="s-nameen"></div>
+      <div class="field"><label>국적 <span class="req">*</span></label>
+        <select id="s-nation"><option value="">선택</option><option>중국</option><option>베트남</option><option>우즈베키스탄</option><option>몽골</option><option>인도네시아</option><option>캄보디아</option><option>미얀마</option><option>필리핀</option><option>기타</option></select>
+      </div>
+      <div class="field"><label>생년월일</label><input type="date" id="s-birth" autocomplete="bday"></div>
+      <div class="field"><label>연락처 <span class="req">*</span></label><input type="tel" id="s-tel" autocomplete="tel" inputmode="tel"></div>
+      <div class="field"><label>이메일 <span class="req">*</span></label><input type="email" id="s-email" autocomplete="email" inputmode="email"></div>
+    </div>
+    <div class="fsec"><i class="ti ti-school"></i> 학업 정보</div>
+    <div class="fgrid">
+      <div class="field"><label>학과 <span class="req">*</span></label><input type="text" id="s-dept"></div>
+      <div class="field"><label>재학 상태 <span class="req">*</span></label>
+        <select id="s-status" onchange="toggleGrad()"><option value="재학">재학</option><option value="졸업예정">졸업예정</option><option value="졸업">졸업</option></select>
+      </div>
+      <div class="field" id="reg-gd-wrap" style="display:none;">
+        <label>졸업예정일 <span class="req">*</span></label>
+        <div style="display:flex;gap:8px;">
+          <select id="s-gy" style="flex:1;font-size:16px;padding:11px 10px;border:0.5px solid var(--border);border-radius:var(--radius-md);background:var(--bg);color:var(--text);-webkit-appearance:none;"></select>
+          <select id="s-gm" style="flex:1;font-size:16px;padding:11px 10px;border:0.5px solid var(--border);border-radius:var(--radius-md);background:var(--bg);color:var(--text);-webkit-appearance:none;"><option value="">월</option><option>01</option><option>02</option><option>03</option><option>04</option><option>05</option><option>06</option><option>07</option><option>08</option><option>09</option><option>10</option><option>11</option><option>12</option></select>
+        </div>
+      </div>
+      <div class="field"><label>학점</label><input type="text" id="s-gpa" placeholder="예) 3.8 / 4.5" inputmode="decimal"></div>
+    </div>
+    <div class="fsec"><i class="ti ti-id-badge"></i> 비자 및 언어</div>
+    <div class="fgrid3">
+      <div class="field"><label>비자 상태 <span class="req">*</span></label>
+        <select id="s-visa"><option value="">선택</option><option>D-2 (유학)</option><option>D-4 (어학연수)</option><option>E-7 (특정활동)</option><option>E-7-M (지역특화)</option><option>F-2 (거주)</option><option>F-4 (재외동포)</option><option>F-5 (영주)</option><option>F-6 (결혼이민)</option><option>H-2 (방문취업)</option><option>기타</option></select>
+      </div>
+      <div class="field"><label>한국어 (TOPIK)</label>
+        <select id="s-topik"><option value="">없음</option><option>TOPIK 1급</option><option>TOPIK 2급</option><option>TOPIK 3급</option><option>TOPIK 4급</option><option>TOPIK 5급</option><option>TOPIK 6급</option></select>
+      </div>
+      <div class="field"><label>영어 능력</label>
+        <select id="s-english"><option value="">선택</option><option value="상">상 (TOEIC 900+)</option><option value="중">중 (TOEIC 700~)</option><option value="하">하 (기초)</option></select>
+      </div>
+    </div>
+    <div class="fgrid" style="margin-top:10px;"><div class="field ffull"><label>기타 언어</label><input type="text" id="s-lang" placeholder="예) 중국어 원어민, 베트남어 능통"></div></div>
+    <div class="fsec"><i class="ti ti-certificate"></i> 자격증 및 기술</div>
+    <div class="fgrid">
+      <div class="field ffull"><label>보유 자격증</label><input type="text" id="s-cert"></div>
+      <div class="field ffull"><label>기술 및 역량</label><textarea id="s-skills"></textarea></div>
+    </div>
+    <div class="fsec"><i class="ti ti-target"></i> 취업 희망</div>
+    <div class="fgrid">
+      <div class="field ffull"><label>희망 직종 <span class="req">*</span></label><input type="text" id="s-job" placeholder="예) 생산직, 품질관리, IT개발, 사무행정, 통번역, 물류·포장"></div>
+      <div class="field"><label>희망 근무지역</label><input type="text" id="s-loc" placeholder="예) 경기도 시흥·안산"></div>
+      <div class="field"><label>희망 급여 (만원/월)</label><input type="text" id="s-salary" inputmode="numeric"></div>
+      <div class="field"><label>취업 가능 시기</label><input type="date" id="s-avail"></div>
+      <div class="field ffull"><label>자기소개 (200자)</label><textarea id="s-intro"></textarea></div>
+    </div>
+    <div class="fsec"><i class="ti ti-lock"></i> 수정요청용 비밀번호</div>
+    <div class="fgrid">
+      <div class="field"><label>비밀번호 <span class="req">*</span></label><input type="password" id="s-pw" autocomplete="new-password"><div class="pw-hint">수정/삭제 요청 시 본인 확인에 사용됩니다.</div></div>
+      <div class="field"><label>비밀번호 확인 <span class="req">*</span></label><input type="password" id="s-pw2" autocomplete="new-password"></div>
+    </div>
+    <div class="consent-sect">
+      <div class="consent-title"><i class="ti ti-shield-lock"></i> 개인정보 수집·이용 동의 <span class="req">*</span></div>
+      <div class="consent-box">경기과학기술대학교 국제교류원은 외국인 유학생의 취업 지원을 위해 성명, 국적, 사진, 연락처, 학과, 비자상태, 언어능력, 자격증, 희망직종 등을 수집·이용합니다. 등록일로부터 1년 보관. (문의: 031-496-4325)</div>
+      <label class="check-row"><input type="checkbox" id="s-consent1"> 개인정보 수집·이용에 동의합니다. <span style="color:var(--red);font-size:11px;">(필수)</span></label>
+      <label class="check-row"><input type="checkbox" id="s-consent2"> 구인 기업에 이력서 제공에 동의합니다. <span style="color:var(--red);font-size:11px;">(필수)</span></label>
+      <label class="check-row"><input type="checkbox" id="s-consent3"> 취업 안내 수신에 동의합니다. <span style="color:var(--text3);font-size:11px;">(선택)</span></label>
+    </div>
+    <div class="submit-row">
+      <button class="btn-s" onclick="resetForm('student')"><i class="ti ti-refresh"></i> 초기화</button>
+      <button class="btn-p" onclick="submitStudent()"><i class="ti ti-send"></i> 이력서 등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- 수정요청 -->
+<div class="panel" id="panel-myinfo">
+  <div id="myinfo-login">
+    <div class="notice n-blue"><i class="ti ti-info-circle"></i> 등록 시 이메일+비밀번호로 로그인 후 수정/삭제를 요청하세요. 관리자 승인 후 반영됩니다.</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="login-card">
+        <div class="login-title"><i class="ti ti-building"></i> 기업 담당자</div>
+        <div class="login-sub">담당자 이메일 + 등록 시 비밀번호</div>
+        <div class="lfield"><label>이메일</label><input type="email" id="my-c-email" autocomplete="email" inputmode="email"></div>
+        <div class="lfield"><label>비밀번호</label><input type="password" id="my-c-pw" autocomplete="current-password"></div>
+        <div class="lerr" id="my-c-err"></div>
+        <button class="btn-full bf-blue" onclick="loginMyC()"><i class="ti ti-login"></i> 로그인</button>
+      </div>
+      <div class="login-card">
+        <div class="login-title"><i class="ti ti-user"></i> 학생</div>
+        <div class="login-sub">등록 이메일 + 등록 시 비밀번호</div>
+        <div class="lfield"><label>이메일</label><input type="email" id="my-s-email" autocomplete="email" inputmode="email"></div>
+        <div class="lfield"><label>비밀번호</label><input type="password" id="my-s-pw" autocomplete="current-password"></div>
+        <div class="lerr" id="my-s-err"></div>
+        <button class="btn-full bf-green" onclick="loginMyS()"><i class="ti ti-login"></i> 로그인</button>
+      </div>
+    </div>
+  </div>
+  <div id="myinfo-form" style="display:none;">
+    <div class="notice n-green" id="myinfo-welcome-msg"></div>
+    <div class="notice n-amber"><i class="ti ti-alert-triangle"></i> 요청 후 관리자 승인 시에만 실제 정보가 변경됩니다.</div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;">
+      <button class="btn-sm" style="flex:1;justify-content:center;" onclick="setReqType('수정')"><i class="ti ti-edit"></i> 수정 요청</button>
+      <button class="btn-sm bsm-r" style="flex:1;justify-content:center;" onclick="setReqType('삭제')"><i class="ti ti-trash"></i> 삭제 요청</button>
+    </div>
+    <div id="edit-req-form" class="form-wrap">
+      <div class="fsec"><i class="ti ti-pencil"></i> 변경할 내용만 입력하세요</div>
+      <div id="edit-fields-wrap"></div>
+      <div class="fsec"><i class="ti ti-lock"></i> 비밀번호 변경 (선택)</div>
+      <div class="fgrid">
+        <div class="field"><label>새 비밀번호</label><input type="password" id="req-newpw" autocomplete="new-password" placeholder="변경 없으면 비워두세요"></div>
+        <div class="field"><label>새 비밀번호 확인</label><input type="password" id="req-newpw2" autocomplete="new-password"></div>
+      </div>
+      <div class="submit-row"><button class="btn-p" onclick="submitEditRequest()"><i class="ti ti-send"></i> 수정 요청 제출</button></div>
+    </div>
+    <div id="del-req-form" style="display:none;">
+      <div class="notice n-red"><i class="ti ti-alert-triangle"></i> 등록 정보 삭제를 요청합니다. 관리자 승인 후 완전히 삭제됩니다.</div>
+      <div class="submit-row">
+        <button class="btn-s" onclick="cancelMyReq()">취소</button>
+        <button class="btn-sm bsm-r" style="flex:1;justify-content:center;font-size:14px;min-height:48px;" onclick="submitDeleteRequest()"><i class="ti ti-trash"></i> 삭제 요청 제출</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 요청 목록 -->
+<div class="panel" id="panel-requests">
+  <div class="toolbar">
+    <select id="req-sf" onchange="filterRequests()"><option value="">전체 상태</option><option value="대기">대기중</option><option value="승인">승인</option><option value="거절">거절</option></select>
+    <select id="req-tf" onchange="filterRequests()"><option value="">전체 유형</option><option value="기업">기업</option><option value="학생">학생</option></select>
+    <button class="btn-sm bsm-p" onclick="loadRequests()"><i class="ti ti-refresh"></i></button>
+  </div>
+  <div id="req-list"><div class="loading">로딩 중...</div></div>
+</div>
+
+<!-- 기업 목록 -->
+<div class="panel" id="panel-companies">
+  <div class="toolbar">
+    <input type="text" id="csrch" placeholder="검색..." oninput="filterC()">
+    <select id="cflt" onchange="filterC()"><option value="">전체 구분</option><option>대기업</option><option>중견기업</option><option>중소기업</option><option>공공기관</option><option>기타</option></select>
+    <button class="btn-sm bsm-g" onclick="downloadExcel('company')"><i class="ti ti-download"></i></button>
+    <button class="btn-sm bsm-o" onclick="openUploadModal('company')"><i class="ti ti-upload"></i></button>
+    <button class="btn-sm bsm-p" onclick="loadCompanies()"><i class="ti ti-refresh"></i></button>
+  </div>
+  <div class="sel-bar" id="c-sel-bar">
+    <span id="c-sel-cnt" style="font-weight:600;">0개 선택됨</span>
+    <div style="display:flex;gap:7px;">
+      <button class="btn-sm" onclick="clearSelC()"><i class="ti ti-x"></i> 해제</button>
+      <button class="btn-sm bsm-r" onclick="bulkDelC()"><i class="ti ti-trash"></i> 선택 삭제</button>
+    </div>
+  </div>
+  <div class="tbl-wrap"><div id="company-tbl"><div class="loading">로딩 중...</div></div></div>
+  <div class="cnt-info" id="c-cnt"></div>
+</div>
+
+<!-- 학생 목록 -->
+<div class="panel" id="panel-students">
+  <div class="toolbar">
+    <input type="text" id="ssrch" placeholder="검색..." oninput="filterS()">
+    <select id="sflt" onchange="filterS()"><option value="">전체 국적</option><option>중국</option><option>베트남</option><option>우즈베키스탄</option><option>몽골</option><option>기타</option></select>
+    <select id="sflt2" onchange="filterS()"><option value="">전체 비자</option><option>D-2 (유학)</option><option>D-4 (어학연수)</option><option>E-7 (특정활동)</option><option>F-2 (거주)</option><option>F-4 (재외동포)</option><option>기타</option></select>
+    <button class="btn-sm bsm-g" onclick="downloadExcel('student')"><i class="ti ti-download"></i></button>
+    <button class="btn-sm bsm-o" onclick="openUploadModal('student')"><i class="ti ti-upload"></i></button>
+    <button class="btn-sm bsm-p" onclick="loadStudents()"><i class="ti ti-refresh"></i></button>
+  </div>
+  <div class="sel-bar" id="s-sel-bar">
+    <span id="s-sel-cnt" style="font-weight:600;">0명 선택됨</span>
+    <div style="display:flex;gap:7px;">
+      <button class="btn-sm" onclick="clearSelS()"><i class="ti ti-x"></i> 해제</button>
+      <button class="btn-sm bsm-r" onclick="bulkDelS()"><i class="ti ti-trash"></i> 선택 삭제</button>
+    </div>
+  </div>
+  <div class="tbl-wrap"><div id="student-tbl"><div class="loading">로딩 중...</div></div></div>
+  <div class="cnt-info" id="s-cnt"></div>
+</div>
+
+<!-- 취업연계 -->
+<div class="panel" id="panel-matches">
+  <div class="toolbar">
+    <select id="mflt" onchange="filterMatches()"><option value="">전체 상태</option><option value="진행중">진행중</option><option value="취업성공">취업성공</option><option value="불발">불발</option></select>
+    <button class="btn-sm bsm-p" onclick="openAddMatchModal()"><i class="ti ti-plus"></i> 연계 등록</button>
+    <button class="btn-sm bsm-g" onclick="downloadExcel('match')"><i class="ti ti-download"></i></button>
+    <button class="btn-sm" onclick="loadMatches()"><i class="ti ti-refresh"></i></button>
+  </div>
+  <div id="match-list"><div class="loading">로딩 중...</div></div>
+</div>
+
+<!-- 관리 -->
+<div class="panel" id="panel-admin">
+  <div style="font-size:14px;font-weight:600;margin-bottom:8px;">Apps Script URL</div>
+  <div class="notice n-amber"><i class="ti ti-alert-triangle"></i> 배포 후 웹앱 URL을 입력하고 저장하세요.</div>
+  <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
+    <input type="url" id="api-url-input" placeholder="https://script.google.com/macros/s/..." style="flex:1;min-width:200px;font-size:16px;padding:11px 12px;border:0.5px solid var(--border);border-radius:var(--radius-md);background:var(--bg);color:var(--text);" inputmode="url">
+    <button class="btn-sm bsm-p" onclick="saveApiUrl()"><i class="ti ti-device-floppy"></i> 저장</button>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+    <div style="font-size:14px;font-weight:600;">관리자 계정</div>
+    <button class="btn-sm bsm-p" onclick="openAddAdminModal()"><i class="ti ti-plus"></i> 추가</button>
+  </div>
+  <div id="admin-list"><div class="loading">로딩 중...</div></div>
+</div>
+
+<!-- 로그인 -->
+<div class="panel" id="panel-login">
+  <div class="login-wrap"><div class="login-card">
+    <div class="login-title"><i class="ti ti-shield"></i> 관리자 로그인</div>
+    <div class="login-sub">관리자만 기업·학생 목록 및 요청을 관리합니다.</div>
+    <div style="padding:11px;background:var(--bg2);border-radius:var(--radius-md);margin-bottom:13px;">
+      <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:5px;">Apps Script URL</label>
+      <input type="url" id="api-url-login" placeholder="https://script.google.com/macros/s/..." style="width:100%;font-size:16px;padding:11px 12px;border:0.5px solid var(--border);border-radius:var(--radius-md);background:var(--bg);color:var(--text);" oninput="syncApiUrl()" inputmode="url">
+    </div>
+    <div class="lfield"><label>아이디</label><input type="text" id="login-id" placeholder="admin" autocomplete="username"></div>
+    <div class="lfield"><label>비밀번호</label><input type="password" id="login-pw" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="lerr" id="login-err"></div>
+    <button class="btn-full bf-blue" onclick="doLogin()"><i class="ti ti-login"></i> 로그인</button>
+    <div style="margin-top:9px;font-size:11px;color:var(--text3);text-align:center;">초기 계정: admin / gtec1234</div>
+  </div></div>
+</div>
+</div>
+
+<!-- 모달들 -->
+<div class="modal-bg" id="upload-modal"><div class="modal" onclick="event.stopPropagation()"><div class="modal-hdr"><h3 id="upload-modal-title">엑셀 업로드</h3><button class="modal-close" onclick="closeModal('upload-modal')"><i class="ti ti-x"></i></button></div><div class="notice n-amber"><i class="ti ti-alert-triangle"></i> 중복 사업자번호(기업) 또는 이메일(학생)은 자동 건너뜁니다.</div><div style="margin-bottom:10px;"><div style="font-size:13px;font-weight:600;margin-bottom:7px;">엑셀 파일 선택</div><input type="file" id="upload-file-input" accept=".xlsx,.xls" style="font-size:14px;width:100%;"></div><div style="font-size:12px;color:var(--text2);margin-bottom:10px;" id="upload-col-hint"></div><div id="upload-result"></div><div style="display:flex;gap:10px;margin-top:14px;"><button class="btn-s" style="flex:1;" onclick="closeModal('upload-modal')">닫기</button><button class="btn-sm bsm-p" style="flex:1;justify-content:center;font-size:14px;min-height:48px;" onclick="doUpload()"><i class="ti ti-upload"></i> 업로드</button></div></div></div>
+<div class="modal-bg" id="edit-modal"><div class="modal" onclick="event.stopPropagation()"><div class="modal-hdr"><h3 id="edit-modal-title">정보 수정</h3><button class="modal-close" onclick="closeModal('edit-modal')"><i class="ti ti-x"></i></button></div><div id="edit-modal-body"></div></div></div>
+<div class="modal-bg" id="match-modal"><div class="modal" onclick="event.stopPropagation()"><div class="modal-hdr"><h3>취업연계 등록</h3><button class="modal-close" onclick="closeModal('match-modal')"><i class="ti ti-x"></i></button></div><div class="fgrid" style="gap:10px;"><div class="field"><label>학생 성명 <span class="req">*</span></label><input type="text" id="m-sname"></div><div class="field"><label>학생 이메일</label><input type="email" id="m-semail" inputmode="email"></div><div class="field"><label>학과</label><input type="text" id="m-dept"></div><div class="field"><label>비자상태</label><input type="text" id="m-visa"></div><div class="field"><label>기업명 <span class="req">*</span></label><input type="text" id="m-cname"></div><div class="field"><label>직종</label><input type="text" id="m-job"></div><div class="field"><label>기업 담당자 이메일</label><input type="email" id="m-cemail" inputmode="email"></div><div class="field"><label>연계 상태</label><select id="m-status"><option>진행중</option><option>취업성공</option><option>불발</option></select></div><div class="field ffull"><label>비고</label><input type="text" id="m-note"></div></div><div style="display:flex;gap:10px;margin-top:14px;"><button class="btn-s" style="flex:1;" onclick="closeModal('match-modal')">취소</button><button class="btn-p" style="flex:1;" onclick="addMatch()"><i class="ti ti-plus"></i> 등록</button></div></div></div>
+<div class="modal-bg" id="addadmin-modal"><div class="modal" onclick="event.stopPropagation()"><div class="modal-hdr"><h3>관리자 계정 추가</h3><button class="modal-close" onclick="closeModal('addadmin-modal')"><i class="ti ti-x"></i></button></div><div class="fgrid" style="gap:10px;"><div class="field"><label>아이디 <span class="req">*</span></label><input type="text" id="na-id" autocomplete="username"></div><div class="field"><label>비밀번호 <span class="req">*</span></label><input type="password" id="na-pw" autocomplete="new-password"></div><div class="field"><label>이름</label><input type="text" id="na-name" autocomplete="name"></div><div class="field"><label>이메일</label><input type="email" id="na-email" inputmode="email"></div></div><div style="display:flex;gap:10px;margin-top:14px;"><button class="btn-s" style="flex:1;" onclick="closeModal('addadmin-modal')">취소</button><button class="btn-p" style="flex:1;" onclick="addAdmin()"><i class="ti ti-plus"></i> 추가</button></div></div></div>
+
+<div id="card-canvas-wrap" style="position:fixed;left:-9999px;top:0;width:680px;"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+let API_URL=localStorage.getItem('gtec_api_url')||'';
+let adminToken=sessionStorage.getItem('gtec_admin_token')||'';
+let adminName=sessionStorage.getItem('gtec_admin_name')||'';
+let companiesData=[],studentsData=[],matchesData=[],requestsData=[];
+let cFiltered=[],sFiltered=[],cSel=new Set(),sSel=new Set();
+let myData=null,myType=null,myEmail=null,myPw=null;
+let photoBase64=null,photoMime=null,photoFileName=null;
+let uploadType=null;
+
+(function init(){
+  document.getElementById('api-url-input').value=API_URL;
+  document.getElementById('api-url-login').value=API_URL;
+  const d=new Date();
+  document.getElementById('h-date').textContent=d.getFullYear()+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getDate().toString().padStart(2,'0');
+  const base=window.location.href.split('#')[0];
+  document.getElementById('url-c').textContent=base+'#reg-company';
+  document.getElementById('url-s').textContent=base+'#reg-student';
+  document.getElementById('url-m').textContent=base+'#myinfo';
+  const gy=document.getElementById('s-gy');
+  gy.innerHTML='<option value="">년도</option>';
+  for(let y=d.getFullYear();y<=d.getFullYear()+4;y++) gy.innerHTML+=`<option>${y}</option>`;
+  if(!API_URL) document.getElementById('api-warn').style.display='flex';
+  if(adminToken) restoreAdminUI();
+  // URL 해시로 탭 자동 이동
+  const hash=window.location.hash.replace('#','');
+  if(hash&&document.getElementById('panel-'+hash)) switchTab(hash);
+})();
+
+function syncApiUrl(){API_URL=document.getElementById('api-url-login').value.trim();document.getElementById('api-url-input').value=API_URL;}
+function saveApiUrl(){
+  API_URL=document.getElementById('api-url-input').value.trim();
+  if(!API_URL){alert('URL을 입력해 주세요.');return;}
+  localStorage.setItem('gtec_api_url',API_URL);
+  document.getElementById('api-url-login').value=API_URL;
+  document.getElementById('api-warn').style.display='none';
+  alert('✅ 저장되었습니다.');
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  const panel=document.getElementById('panel-'+tab);
+  const btn=document.getElementById('tab-'+tab);
+  if(panel) panel.classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(tab==='companies') loadCompanies();
+  if(tab==='students')  loadStudents();
+  if(tab==='matches')   loadMatches();
+  if(tab==='requests')  loadRequests();
+  if(tab==='admin')     loadAdmins();
+}
+
+async function api(body){
+  if(!API_URL) throw new Error('API URL이 설정되지 않았습니다.');
+  const res=await fetch(API_URL,{method:'POST',body:JSON.stringify(body),headers:{'Content-Type':'application/json'}});
+  return res.json();
+}
+
+// 관리자 로그인
+async function doLogin(){
+  const id=document.getElementById('login-id').value.trim();
+  const pw=document.getElementById('login-pw').value;
+  const err=document.getElementById('login-err');
+  err.style.display='none';
+  if(!id||!pw){err.textContent='아이디와 비밀번호를 입력해 주세요.';err.style.display='block';return;}
+  if(!API_URL){err.textContent='Apps Script URL을 먼저 입력해 주세요.';err.style.display='block';return;}
+  try{
+    const r=await api({action:'login',id,password:pw});
+    if(r.ok){adminToken=r.token;adminName=r.name;sessionStorage.setItem('gtec_admin_token',adminToken);sessionStorage.setItem('gtec_admin_name',adminName);restoreAdminUI();checkPendingCount();switchTab('requests');}
+    else{err.textContent=r.error;err.style.display='block';}
+  }catch(e){err.textContent=e.message;err.style.display='block';}
+}
+function restoreAdminUI(){
+  document.getElementById('admin-badge').style.display='flex';
+  document.getElementById('admin-name-disp').textContent=adminName;
+  document.getElementById('logout-btn').style.display='flex';
+  document.getElementById('tab-login').style.display='none';
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display='flex');
+}
+function doLogout(){
+  adminToken='';adminName='';
+  sessionStorage.removeItem('gtec_admin_token');sessionStorage.removeItem('gtec_admin_name');
+  document.getElementById('admin-badge').style.display='none';
+  document.getElementById('logout-btn').style.display='none';
+  document.getElementById('tab-login').style.display='flex';
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
+  document.getElementById('req-badge').style.display='none';
+  switchTab('home');
+}
+async function checkPendingCount(){
+  try{const r=await api({action:'getPendingCount',token:adminToken});if(r.ok){const b=document.getElementById('req-badge');if(r.count>0){b.textContent=r.count;b.style.display='block';}else b.style.display='none';}}catch(e){}
+}
+
+// 사진
+function previewPhoto(input){
+  const file=input.files[0];if(!file)return;
+  if(file.size>5*1024*1024){alert('5MB 이하의 파일만 가능합니다.');input.value='';return;}
+  if(!['image/jpeg','image/png'].includes(file.type)){alert('JPG 또는 PNG 파일만 가능합니다.');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const result=e.target.result;
+    photoBase64=result.split(',')[1];photoMime=file.type;photoFileName=file.name;
+    document.getElementById('photo-preview-wrap').innerHTML=`<img src="${result}" alt="사진">`;
+    document.getElementById('photo-remove-btn').style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+function removePhoto(){
+  photoBase64=null;photoMime=null;photoFileName=null;
+  document.getElementById('s-photo-input').value='';
+  document.getElementById('photo-preview-wrap').innerHTML='<div class="photo-ph"><i class="ti ti-user"></i></div>';
+  document.getElementById('photo-remove-btn').style.display='none';
+}
+
+// 근무일수
+function toggleWD(){
+  const v=document.querySelector('input[name="c-workdays"]:checked');
+  document.getElementById('workdays-custom').style.display=(v&&v.value==='기타')?'block':'none';
+}
+function getWD(){
+  const v=document.querySelector('input[name="c-workdays"]:checked');
+  if(!v)return'주5일';
+  if(v.value==='기타')return document.getElementById('workdays-custom').value||'기타';
+  return v.value;
+}
+function toggleGrad(){
+  const wrap=document.getElementById('reg-gd-wrap');
+  if(wrap) wrap.style.display=document.getElementById('s-status').value==='졸업예정'?'block':'none';
+}
+
+// 기업 등록
+async function submitCompany(){
+  const f=id=>document.getElementById(id)?.value?.trim()||'';
+  if(!f('c-name')||!f('c-bizno')||!f('c-address')||!f('c-cname')||!f('c-cemail')||!f('c-job')){alert('필수 항목을 모두 입력해 주세요.');return;}
+  if(!document.getElementById('c-consent').checked){alert('개인정보 동의가 필요합니다.');return;}
+  const pw=f('c-pw'),pw2=f('c-pw2');
+  if(!pw){alert('비밀번호를 설정해 주세요.');return;}
+  if(pw!==pw2){alert('비밀번호가 일치하지 않습니다.');return;}
+  if(!API_URL){alert('API URL이 설정되지 않았습니다.');return;}
+  const typeEl=document.querySelector('input[name="c-type"]:checked');
+  try{
+    const r=await api({action:'addCompany',data:{name:f('c-name'),bizno:f('c-bizno'),address:f('c-address'),ceo:f('c-ceo'),tel:f('c-tel'),web:f('c-web'),year:f('c-year'),type:typeEl?typeEl.value:'중소기업',industry:f('c-industry'),biz:f('c-biz'),capital:f('c-capital'),revenue:f('c-revenue'),workers:f('c-workers'),salary:f('c-salary'),hours:f('c-hours'),workdays:getWD(),insurance:f('c-insurance'),welfare:f('c-welfare'),job:f('c-job'),headcount:f('c-headcount'),emptype:f('c-emptype'),deadline:f('c-deadline'),req:f('c-req'),contactName:f('c-cname'),contactTel:f('c-ctel'),contactEmail:f('c-cemail'),password:pw}});
+    if(r.ok){alert('✅ 등록되었습니다.');resetForm('company');}else alert('오류: '+r.error);
+  }catch(e){alert('오류: '+e.message);}
+}
+
+// 학생 등록
+async function submitStudent(){
+  const f=id=>document.getElementById(id)?.value?.trim()||'';
+  if(!f('s-nameko')||!f('s-nation')||!f('s-tel')||!f('s-email')||!f('s-dept')||!f('s-job')||!f('s-visa')){alert('필수 항목을 모두 입력해 주세요.');return;}
+  if(!document.getElementById('s-consent1').checked||!document.getElementById('s-consent2').checked){alert('필수 동의 항목을 확인해 주세요.');return;}
+  const pw=f('s-pw'),pw2=f('s-pw2');
+  if(!pw){alert('비밀번호를 설정해 주세요.');return;}
+  if(pw!==pw2){alert('비밀번호가 일치하지 않습니다.');return;}
+  if(!API_URL){alert('API URL이 설정되지 않았습니다.');return;}
+  const status=f('s-status');let gradDate='';
+  if(status==='졸업예정'){
+    const gy=document.getElementById('s-gy').value,gm=document.getElementById('s-gm').value;
+    if(!gy||!gm){alert('졸업예정일을 선택해 주세요.');return;}
+    gradDate=gy+'년 '+gm+'월';
+  }
+  let photoUrl='';
+  if(photoBase64){
+    try{const pr=await api({action:'uploadPhoto',data:photoBase64,mimeType:photoMime,fileName:photoFileName});if(pr.ok)photoUrl=pr.url;else if(!confirm('사진 업로드 실패. 사진 없이 계속 등록하시겠습니까?'))return;}
+    catch(e){if(!confirm('사진 업로드 오류. 사진 없이 계속 등록하시겠습니까?'))return;}
+  }
+  try{
+    const r=await api({action:'addStudent',data:{nameKo:f('s-nameko'),nameEn:f('s-nameen'),nation:f('s-nation'),birth:f('s-birth'),tel:f('s-tel'),email:f('s-email'),dept:f('s-dept'),status,gradDate,gpa:f('s-gpa'),topik:f('s-topik'),english:f('s-english'),lang:f('s-lang'),cert:f('s-cert'),skills:f('s-skills'),visa:f('s-visa'),job:f('s-job'),loc:f('s-loc'),salary:f('s-salary'),avail:f('s-avail'),intro:f('s-intro'),photoUrl,password:pw}});
+    if(r.ok){alert('✅ 등록되었습니다.');resetForm('student');}else alert('오류: '+r.error);
+  }catch(e){alert('오류: '+e.message);}
+}
+
+// 데이터 로드
+async function loadCompanies(){
+  document.getElementById('company-tbl').innerHTML='<div class="loading">로딩 중...</div>';
+  try{const r=await api({action:'getCompanies',token:adminToken});if(r.ok){companiesData=r.data;cFiltered=[...r.data];renderCompanyTable(r.data);updateHomeStats();}else document.getElementById('company-tbl').innerHTML=`<div class="empty">${r.error}</div>`;}
+  catch(e){document.getElementById('company-tbl').innerHTML=`<div class="empty">${e.message}</div>`;}
+}
+async function loadStudents(){
+  document.getElementById('student-tbl').innerHTML='<div class="loading">로딩 중...</div>';
+  try{const r=await api({action:'getStudents',token:adminToken});if(r.ok){studentsData=r.data;sFiltered=[...r.data];renderStudentTable(r.data);updateHomeStats();}else document.getElementById('student-tbl').innerHTML=`<div class="empty">${r.error}</div>`;}
+  catch(e){document.getElementById('student-tbl').innerHTML=`<div class="empty">${e.message}</div>`;}
+}
+async function loadMatches(){
+  document.getElementById('match-list').innerHTML='<div class="loading">로딩 중...</div>';
+  try{const r=await api({action:'getMatches',token:adminToken});if(r.ok){matchesData=r.data;renderMatchList(r.data);updateHomeStats();}else document.getElementById('match-list').innerHTML=`<div class="empty">${r.error}</div>`;}
+  catch(e){document.getElementById('match-list').innerHTML=`<div class="empty">${e.message}</div>`;}
+}
+function updateHomeStats(){
+  document.getElementById('h-comp').textContent=companiesData.length||'-';
+  document.getElementById('h-stu').textContent=studentsData.length||'-';
+  document.getElementById('h-match').textContent=matchesData.filter(m=>m['연계상태']==='취업성공').length||'-';
+}
+
+// 테이블 렌더
+function renderCompanyTable(data){
+  cFiltered=data;
+  if(!data||!data.length){document.getElementById('company-tbl').innerHTML='<div class="empty">등록된 기업이 없습니다.</div>';document.getElementById('c-cnt').textContent='';return;}
+  const allChk=data.length>0&&data.every(c=>cSel.has(c._row));
+  const someChk=data.some(c=>cSel.has(c._row));
+  let html=`<table><thead><tr><th style="width:40px;"><input type="checkbox" id="c-all-cb" ${allChk?'checked':''} onchange="toggleAllC(this)"></th><th>회사명</th><th>구분</th><th>직종</th><th>근무일수</th><th>마감일</th><th>등록일</th><th>관리</th></tr></thead><tbody>`;
+  data.forEach(c=>{
+    const sel=cSel.has(c._row);
+    html+=`<tr id="cr-${c._row}" class="${sel?'sel-row':''}">
+      <td><input type="checkbox" ${sel?'checked':''} onchange="toggleCRow(${c._row},this)"></td>
+      <td><strong>${c['회사명']||''}</strong><br><small style="color:var(--text2)">${c['업종']||''}</small></td>
+      <td><span class="tag t-b">${c['기업구분']||''}</span></td>
+      <td>${c['직종']||''}</td>
+      <td><span class="tag t-gr">${c['근무일수']||'-'}</span></td>
+      <td>${c['채용마감일']||''}</td>
+      <td><small>${(c['등록일시']||'').substring(0,10)}</small></td>
+      <td style="white-space:nowrap;">
+        <button class="btn-sm" style="margin-bottom:3px;" onclick="downloadCard('company',${companiesData.indexOf(c)})"><i class="ti ti-photo-down"></i></button>
+        <button class="btn-sm" style="margin-bottom:3px;" onclick="editCompany(${companiesData.indexOf(c)})"><i class="ti ti-edit"></i></button>
+        <button class="btn-sm bsm-r" onclick="delC(${c._row})"><i class="ti ti-trash"></i></button>
+      </td></tr>`;
+  });
+  html+='</tbody></table>';
+  document.getElementById('company-tbl').innerHTML=html;
+  const cb=document.getElementById('c-all-cb');if(cb)cb.indeterminate=someChk&&!allChk;
+  document.getElementById('c-cnt').textContent=`전체 ${data.length}개 기업`;
+}
+
+function renderStudentTable(data){
+  sFiltered=data;
+  if(!data||!data.length){document.getElementById('student-tbl').innerHTML='<div class="empty">등록된 학생이 없습니다.</div>';document.getElementById('s-cnt').textContent='';return;}
+  const allChk=data.length>0&&data.every(s=>sSel.has(s._row));
+  const someChk=data.some(s=>sSel.has(s._row));
+  let html=`<table><thead><tr><th style="width:40px;"><input type="checkbox" id="s-all-cb" ${allChk?'checked':''} onchange="toggleAllS(this)"></th><th>사진</th><th>성명</th><th>국적</th><th>비자</th><th>TOPIK</th><th>희망직종</th><th>등록일</th><th>관리</th></tr></thead><tbody>`;
+  data.forEach(s=>{
+    const sel=sSel.has(s._row);
+    const ph=s['사진URL']?`<img src="${s['사진URL']}" style="width:32px;height:40px;object-fit:cover;border-radius:4px;border:0.5px solid var(--border);">`:`<div style="width:32px;height:40px;background:var(--bg2);border-radius:4px;border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text3);"><i class="ti ti-user"></i></div>`;
+    html+=`<tr id="sr-${s._row}" class="${sel?'sel-row':''}">
+      <td><input type="checkbox" ${sel?'checked':''} onchange="toggleSRow(${s._row},this)"></td>
+      <td>${ph}</td>
+      <td><strong>${s['성명(한국어)']||''}</strong><br><small style="color:var(--text2)">${s['성명(영문)']||''}</small></td>
+      <td><span class="tag t-gr">${s['국적']||''}</span></td>
+      <td><span class="tag t-a" style="font-size:10px;">${s['현재비자상태']||''}</span></td>
+      <td>${s['한국어(TOPIK)']||'-'}</td>
+      <td>${s['희망직종']||''}</td>
+      <td><small>${(s['등록일시']||'').substring(0,10)}</small></td>
+      <td style="white-space:nowrap;">
+        <button class="btn-sm" style="margin-bottom:3px;" onclick="downloadCard('student',${studentsData.indexOf(s)})"><i class="ti ti-photo-down"></i></button>
+        <button class="btn-sm" style="margin-bottom:3px;" onclick="editStudent(${studentsData.indexOf(s)})"><i class="ti ti-edit"></i></button>
+        <button class="btn-sm bsm-r" onclick="delS(${s._row})"><i class="ti ti-trash"></i></button>
+      </td></tr>`;
+  });
+  html+='</tbody></table>';
+  document.getElementById('student-tbl').innerHTML=html;
+  const cb=document.getElementById('s-all-cb');if(cb)cb.indeterminate=someChk&&!allChk;
+  document.getElementById('s-cnt').textContent=`전체 ${data.length}명`;
+}
+
+// 체크박스 기업
+function toggleCRow(row,cb){if(cb.checked)cSel.add(row);else cSel.delete(row);const tr=document.getElementById('cr-'+row);if(tr)tr.className=cb.checked?'sel-row':'';updateCSelBar();updateCAllCb();}
+function toggleAllC(cb){cFiltered.forEach(c=>{if(cb.checked)cSel.add(c._row);else cSel.delete(c._row);const tr=document.getElementById('cr-'+c._row);if(tr){tr.className=cb.checked?'sel-row':'';const cb2=tr.querySelector('input[type=checkbox]');if(cb2)cb2.checked=cb.checked;}});updateCSelBar();}
+function updateCAllCb(){const el=document.getElementById('c-all-cb');if(!el)return;const t=cFiltered.length,s=cFiltered.filter(c=>cSel.has(c._row)).length;el.checked=s>0&&s===t;el.indeterminate=s>0&&s<t;}
+function updateCSelBar(){const n=cSel.size;document.getElementById('c-sel-bar').className='sel-bar'+(n>0?' on':'');document.getElementById('c-sel-cnt').textContent=`${n}개 선택됨`;}
+function clearSelC(){cSel.clear();document.querySelectorAll('#company-tbl input[type=checkbox]').forEach(cb=>cb.checked=false);document.querySelectorAll('#company-tbl tr').forEach(tr=>tr.className='');updateCSelBar();}
+
+// 체크박스 학생
+function toggleSRow(row,cb){if(cb.checked)sSel.add(row);else sSel.delete(row);const tr=document.getElementById('sr-'+row);if(tr)tr.className=cb.checked?'sel-row':'';updateSSelBar();updateSAllCb();}
+function toggleAllS(cb){sFiltered.forEach(s=>{if(cb.checked)sSel.add(s._row);else sSel.delete(s._row);const tr=document.getElementById('sr-'+s._row);if(tr){tr.className=cb.checked?'sel-row':'';const cb2=tr.querySelector('input[type=checkbox]');if(cb2)cb2.checked=cb.checked;}});updateSSelBar();}
+function updateSAllCb(){const el=document.getElementById('s-all-cb');if(!el)return;const t=sFiltered.length,s=sFiltered.filter(s=>sSel.has(s._row)).length;el.checked=s>0&&s===t;el.indeterminate=s>0&&s<t;}
+function updateSSelBar(){const n=sSel.size;document.getElementById('s-sel-bar').className='sel-bar'+(n>0?' on':'');document.getElementById('s-sel-cnt').textContent=`${n}명 선택됨`;}
+function clearSelS(){sSel.clear();document.querySelectorAll('#student-tbl input[type=checkbox]').forEach(cb=>cb.checked=false);document.querySelectorAll('#student-tbl tr').forEach(tr=>tr.className='');updateSSelBar();}
+
+// 삭제
+async function delC(row){const c=companiesData.find(c=>c._row===row);if(!confirm(`"${c&&c['회사명']}" 기업을 삭제하시겠습니까?`))return;try{const r=await api({action:'deleteCompany',token:adminToken,row});if(r.ok)loadCompanies();else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+async function delS(row){const s=studentsData.find(s=>s._row===row);if(!confirm(`"${s&&s['성명(한국어)']}" 학생을 삭제하시겠습니까?`))return;try{const r=await api({action:'deleteStudent',token:adminToken,row});if(r.ok)loadStudents();else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+async function bulkDelC(){if(cSel.size===0)return;const names=companiesData.filter(c=>cSel.has(c._row)).map(c=>c['회사명']).join(', ');if(!confirm(`선택한 ${cSel.size}개 기업을 삭제하시겠습니까?\n\n${names}`))return;const rows=[...cSel];let ok=0,fail=0;for(const row of rows){try{const r=await api({action:'deleteCompany',token:adminToken,row});if(r.ok)ok++;else fail++;}catch(e){fail++;}}cSel.clear();loadCompanies();alert(`✅ ${ok}개 삭제 완료${fail>0?` (${fail}개 실패)`:''}`); }
+async function bulkDelS(){if(sSel.size===0)return;const names=studentsData.filter(s=>sSel.has(s._row)).map(s=>s['성명(한국어)']).join(', ');if(!confirm(`선택한 ${sSel.size}명을 삭제하시겠습니까?\n\n${names}`))return;const rows=[...sSel];let ok=0,fail=0;for(const row of rows){try{const r=await api({action:'deleteStudent',token:adminToken,row});if(r.ok)ok++;else fail++;}catch(e){fail++;}}sSel.clear();loadStudents();alert(`✅ ${ok}명 삭제 완료${fail>0?` (${fail}명 실패)`:''}`); }
+
+// 필터
+function filterC(){const q=document.getElementById('csrch').value.toLowerCase(),f=document.getElementById('cflt').value;renderCompanyTable(companiesData.filter(c=>(!q||(c['회사명']||'').toLowerCase().includes(q)||(c['업종']||'').toLowerCase().includes(q)||(c['직종']||'').toLowerCase().includes(q))&&(!f||c['기업구분']===f)));}
+function filterS(){const q=document.getElementById('ssrch').value.toLowerCase(),f=document.getElementById('sflt').value,f2=document.getElementById('sflt2').value;renderStudentTable(studentsData.filter(s=>(!q||(s['성명(한국어)']||'').toLowerCase().includes(q)||(s['학과']||'').toLowerCase().includes(q)||(s['희망직종']||'').toLowerCase().includes(q))&&(!f||s['국적']===f)&&(!f2||s['현재비자상태']===f2)));}
+
+// 엑셀
+function downloadExcel(type){const dm={company:companiesData,student:studentsData,match:matchesData};const nm={company:'기업정보',student:'학생정보',match:'취업연계'};const data=dm[type];if(!data||!data.length){alert('데이터가 없습니다.');return;}const keys=Object.keys(data[0]).filter(k=>k!=='_row');const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([keys,...data.map(r=>keys.map(k=>r[k]||''))]),nm[type]);XLSX.writeFile(wb,`GTEC_${nm[type]}_${new Date().toISOString().substring(0,10)}.xlsx`);}
+const COL_MAP_C={'회사명':'name','사업자등록번호':'bizno','소재지':'address','대표자':'ceo','전화번호':'tel','홈페이지':'web','설립년도':'year','기업구분':'type','업종':'industry','사업내용':'biz','자본금(만원)':'capital','매출액(만원)':'revenue','근로자수':'workers','임금(만원/월)':'salary','근무시간':'hours','근무일수':'workdays','보험사항':'insurance','복리후생':'welfare','직종':'job','모집인원':'headcount','고용형태':'emptype','채용마감일':'deadline','우대사항':'req','담당자성명':'contactName','담당자전화':'contactTel','담당자이메일':'contactEmail'};
+const COL_MAP_S={'성명(한국어)':'nameKo','성명(영문)':'nameEn','국적':'nation','생년월일':'birth','연락처':'tel','이메일':'email','학과':'dept','재학상태':'status','졸업예정일':'gradDate','학점':'gpa','한국어(TOPIK)':'topik','영어능력':'english','기타언어':'lang','보유자격증':'cert','기술및역량':'skills','현재비자상태':'visa','희망직종':'job','희망근무지역':'loc','희망급여(만원/월)':'salary','취업가능시기':'avail','자기소개':'intro'};
+function openUploadModal(type){uploadType=type;document.getElementById('upload-modal-title').textContent=(type==='company'?'기업':'학생')+' 엑셀 업로드';document.getElementById('upload-file-input').value='';document.getElementById('upload-result').innerHTML='';const cols=type==='company'?Object.keys(COL_MAP_C):Object.keys(COL_MAP_S);document.getElementById('upload-col-hint').textContent=`필요 컬럼: ${cols.slice(0,5).join(', ')} 외 ${cols.length-5}개`;document.getElementById('upload-modal').classList.add('open');}
+async function doUpload(){const file=document.getElementById('upload-file-input').files[0];if(!file){alert('파일을 선택해 주세요.');return;}const rd=document.getElementById('upload-result');rd.innerHTML='<div class="loading">파싱 중...</div>';try{const ab=await file.arrayBuffer();const wb=XLSX.read(ab,{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];const rows=XLSX.utils.sheet_to_json(ws,{defval:''});if(!rows.length){rd.innerHTML='<div class="upload-err">데이터가 없습니다.</div>';return;}const colMap=uploadType==='company'?COL_MAP_C:COL_MAP_S;const mapped=rows.map(r=>{const obj={};Object.entries(colMap).forEach(([kr,en])=>{obj[en]=(r[kr]||'').toString().trim();});return obj;});rd.innerHTML='<div class="loading">업로드 중...</div>';const action=uploadType==='company'?'bulkUploadCompany':'bulkUploadStudent';const r=await api({action,token:adminToken,rows:mapped});if(r.ok){rd.innerHTML=`<div class="upload-ok">✅ ${r.added}건 등록 완료 / ${r.skipped}건 중복 건너뜀</div>`;if(uploadType==='company')loadCompanies();else loadStudents();}else rd.innerHTML=`<div class="upload-err">오류: ${r.error}</div>`;}catch(e){rd.innerHTML=`<div class="upload-err">오류: ${e.message}</div>`;}}
+
+// 요청
+async function loadRequests(){document.getElementById('req-list').innerHTML='<div class="loading">로딩 중...</div>';try{const r=await api({action:'getRequests',token:adminToken});if(r.ok){requestsData=r.data;renderRequests(r.data);checkPendingCount();}else document.getElementById('req-list').innerHTML=`<div class="empty">${r.error}</div>`;}catch(e){document.getElementById('req-list').innerHTML=`<div class="empty">${e.message}</div>`;}}
+function filterRequests(){const sf=document.getElementById('req-sf').value,tf=document.getElementById('req-tf').value;renderRequests(requestsData.filter(r=>(!sf||r['상태(대기/승인/거절)']=== sf)&&(!tf||r['유형(기업/학생)']=== tf)));}
+function renderRequests(data){
+  if(!data||!data.length){document.getElementById('req-list').innerHTML='<div class="empty">요청이 없습니다.</div>';return;}
+  const sc={'대기':'t-a','승인':'t-g','거절':'t-r'};
+  document.getElementById('req-list').innerHTML=data.slice().reverse().map(req=>{
+    const status=req['상태(대기/승인/거절)'];
+    let ch='';
+    if(req['요청종류(수정/삭제)']==='수정'&&req['변경내용(JSON)']){try{const obj=JSON.parse(req['변경내용(JSON)']);ch='<div class="req-changes">';Object.entries(obj).forEach(([k,v])=>{if(k!=='newPassword')ch+=`<span style="color:var(--text2)">${k}:</span> ${v}<br>`;});if(obj.newPassword)ch+='<span style="color:var(--text2)">비밀번호:</span> (변경 요청됨)<br>';ch+='</div>';}catch(e){}}
+    return `<div class="req-card"><div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;"><div><div style="font-size:14px;font-weight:600;"><span class="tag t-b" style="margin-right:4px;">${req['유형(기업/학생)']||''}</span><span class="tag ${req['요청종류(수정/삭제)']==='삭제'?'t-r':'t-gr'}" style="margin-right:6px;">${req['요청종류(수정/삭제)']||''}</span>${req['대상명']||''}</div><div style="font-size:12px;color:var(--text2);margin-top:4px;">${req['요청자이메일']||''} · ${(req['요청일시']||'').substring(0,10)}</div></div><span class="tag ${sc[status]||'t-gr'}">${status}</span></div>${ch}${status==='대기'?`<div class="req-actions"><button class="btn-sm bsm-r" onclick="rejectRequest(${req._row})"><i class="ti ti-x"></i> 거절</button><button class="btn-sm bsm-g" onclick="approveRequest(${req._row})"><i class="ti ti-check"></i> 승인</button></div>`:`<div style="font-size:12px;color:var(--text3);text-align:right;">처리: ${(req['처리일시']||'').substring(0,10)} · ${req['처리자']||''}</div>`}</div>`;
+  }).join('');
+}
+async function approveRequest(row){if(!confirm('승인하시겠습니까?'))return;try{const r=await api({action:'approveRequest',token:adminToken,row,adminName});if(r.ok){alert('✅ 승인되었습니다.');loadRequests();}else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+async function rejectRequest(row){if(!confirm('거절하시겠습니까?'))return;try{const r=await api({action:'rejectRequest',token:adminToken,row,adminName});if(r.ok)loadRequests();else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+
+// 본인 수정요청
+async function loginMyC(){const email=document.getElementById('my-c-email').value.trim(),pw=document.getElementById('my-c-pw').value;const err=document.getElementById('my-c-err');err.style.display='none';if(!email||!pw){err.textContent='이메일과 비밀번호를 입력해 주세요.';err.style.display='block';return;}try{const r=await api({action:'loginAsCompany',email,password:pw});if(r.ok){myData=r.data;myType='기업';myEmail=email;myPw=pw;showMyForm();}else{err.textContent=r.error;err.style.display='block';}}catch(e){err.textContent=e.message;err.style.display='block';}}
+async function loginMyS(){const email=document.getElementById('my-s-email').value.trim(),pw=document.getElementById('my-s-pw').value;const err=document.getElementById('my-s-err');err.style.display='none';if(!email||!pw){err.textContent='이메일과 비밀번호를 입력해 주세요.';err.style.display='block';return;}try{const r=await api({action:'loginAsStudent',email,password:pw});if(r.ok){myData=r.data;myType='학생';myEmail=email;myPw=pw;showMyForm();}else{err.textContent=r.error;err.style.display='block';}}catch(e){err.textContent=e.message;err.style.display='block';}}
+function showMyForm(){const name=myType==='기업'?myData['회사명']:myData['성명(한국어)'];document.getElementById('myinfo-login').style.display='none';document.getElementById('myinfo-form').style.display='block';document.getElementById('myinfo-welcome-msg').innerHTML=`<i class="ti ti-check"></i> <strong>${name}</strong> 님 확인되었습니다.`;document.getElementById('user-badge').style.display='flex';document.getElementById('user-name-disp').textContent=name;setReqType('수정');buildEditFields();}
+function setReqType(t){document.getElementById('edit-req-form').style.display=t==='수정'?'block':'none';document.getElementById('del-req-form').style.display=t==='삭제'?'block':'none';}
+function buildEditFields(){const wrap=document.getElementById('edit-fields-wrap');const fields=myType==='기업'?[['회사명','text'],['소재지','text'],['전화번호','tel'],['업종','text'],['직종','text'],['모집인원','text'],['임금(만원/월)','text'],['채용마감일','date'],['우대사항','textarea'],['복리후생','textarea']]:[['성명(한국어)','text'],['성명(영문)','text'],['연락처','tel'],['학과','text'],['학점','text'],['희망직종','text'],['희망근무지역','text'],['희망급여(만원/월)','text'],['보유자격증','text'],['자기소개','textarea']];let html='<div class="fgrid" style="gap:10px;">';fields.forEach(([lbl,type])=>{const val=(myData[lbl]||'').replace(/"/g,'&quot;');html+=type==='textarea'?`<div class="field ffull"><label>${lbl}</label><textarea id="ef-${lbl}">${val}</textarea></div>`:`<div class="field"><label>${lbl}</label><input type="${type}" id="ef-${lbl}" value="${val}"></div>`;});html+='</div>';wrap.innerHTML=html;}
+async function submitEditRequest(){const newpw=document.getElementById('req-newpw').value,newpw2=document.getElementById('req-newpw2').value;if(newpw&&newpw!==newpw2){alert('새 비밀번호가 일치하지 않습니다.');return;}const changes={};document.querySelectorAll('[id^="ef-"]').forEach(el=>{if(el.value.trim())changes[el.id.replace('ef-','')]=el.value.trim();});if(newpw)changes.newPassword=newpw;if(!Object.keys(changes).length){alert('변경할 내용을 입력해 주세요.');return;}const identifier=myType==='기업'?myData['사업자등록번호']:myData['이메일'];const targetName=myType==='기업'?myData['회사명']:myData['성명(한국어)'];try{const r=await api({action:'submitRequest',userType:myType,requestType:'수정',identifier,targetName,email:myEmail,password:myPw,changes});if(r.ok){alert('✅ 수정 요청이 제출되었습니다.');cancelMyReq();}else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+async function submitDeleteRequest(){if(!confirm('정말 삭제를 요청하시겠습니까?'))return;const identifier=myType==='기업'?myData['사업자등록번호']:myData['이메일'];const targetName=myType==='기업'?myData['회사명']:myData['성명(한국어)'];try{const r=await api({action:'submitRequest',userType:myType,requestType:'삭제',identifier,targetName,email:myEmail,password:myPw,changes:{}});if(r.ok){alert('✅ 삭제 요청이 제출되었습니다.');cancelMyReq();}else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+function cancelMyReq(){myData=null;myType=null;myEmail=null;myPw=null;document.getElementById('myinfo-login').style.display='block';document.getElementById('myinfo-form').style.display='none';document.getElementById('user-badge').style.display='none';}
+
+// 취업연계
+function filterMatches(){const f=document.getElementById('mflt').value;renderMatchList(matchesData.filter(m=>!f||m['연계상태']===f));}
+function renderMatchList(data){
+  if(!data||!data.length){document.getElementById('match-list').innerHTML='<div class="empty">등록된 취업연계가 없습니다.</div>';return;}
+  const sc={'진행중':'t-a','취업성공':'t-g','불발':'t-r'};
+  document.getElementById('match-list').innerHTML=data.map(m=>`<div class="match-card"><div class="match-inner"><div class="match-side"><div class="ms-label"><i class="ti ti-user" style="font-size:11px;"></i> 학생</div><div class="ms-name">${m['학생성명']||''}</div><div class="ms-sub">${m['학과']||''} · ${m['비자상태']||''}</div></div><div style="text-align:center;padding:0 8px;"><div style="font-size:16px;color:var(--text3);">→</div><span class="tag ${sc[m['연계상태']]||'t-gr'}">${m['연계상태']||''}</span></div><div class="match-side"><div class="ms-label"><i class="ti ti-building" style="font-size:11px;"></i> 기업</div><div class="ms-name">${m['기업명']||''}</div><div class="ms-sub">${m['직종']||''}</div></div></div><div class="match-actions"><button class="btn-sm" onclick="changeMatchStatus(${m._row})"><i class="ti ti-refresh"></i> 상태변경</button><button class="btn-sm bsm-r" onclick="deleteMatch(${m._row})"><i class="ti ti-trash"></i></button></div></div>`).join('');
+}
+function openAddMatchModal(){document.getElementById('match-modal').classList.add('open');}
+async function addMatch(){const g=id=>document.getElementById(id)?.value?.trim()||'';if(!g('m-sname')||!g('m-cname')){alert('학생 성명과 기업명은 필수입니다.');return;}try{const r=await api({action:'addMatch',token:adminToken,data:{studentName:g('m-sname'),studentEmail:g('m-semail'),dept:g('m-dept'),visa:g('m-visa'),companyName:g('m-cname'),job:g('m-job'),contactEmail:g('m-cemail'),note:g('m-note'),status:g('m-status')||'진행중'}});if(r.ok){closeModal('match-modal');loadMatches();alert('✅ 등록되었습니다.');}else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+async function changeMatchStatus(row){const s=prompt('새 상태:\n진행중 / 취업성공 / 불발');if(!s)return;if(!['진행중','취업성공','불발'].includes(s)){alert('올바른 상태를 입력해 주세요.');return;}try{const r=await api({action:'updateMatchStatus',token:adminToken,row,status:s});if(r.ok)loadMatches();else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+async function deleteMatch(row){if(!confirm('삭제하시겠습니까?'))return;try{const r=await api({action:'deleteMatch',token:adminToken,row});if(r.ok)loadMatches();else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+
+// 관리자 편집
+function editCompany(idx){const c=companiesData[idx];document.getElementById('edit-modal-title').textContent=c['회사명']+' 수정';const flds=[['회사명','ec-n'],['소재지','ec-a'],['전화번호','ec-t'],['업종','ec-i'],['직종','ec-j'],['근무일수','ec-wd'],['모집인원','ec-h'],['임금(만원/월)','ec-s'],['채용마감일','ec-d'],['담당자성명','ec-cn'],['담당자이메일','ec-ce']];let html='<div class="fgrid" style="gap:10px;">';flds.forEach(([l,id])=>{html+=`<div class="field"><label>${l}</label><input type="text" id="${id}" value="${c[l]||''}"></div>`;});html+=`</div><div style="display:flex;gap:10px;margin-top:14px;"><button class="btn-s" style="flex:1;" onclick="closeModal('edit-modal')">취소</button><button class="btn-p" style="flex:1;" onclick="saveC(${idx},${c._row})"><i class="ti ti-device-floppy"></i> 저장</button></div>`;document.getElementById('edit-modal-body').innerHTML=html;document.getElementById('edit-modal').classList.add('open');}
+async function saveC(idx,row){const c=companiesData[idx],g=id=>document.getElementById(id)?.value||'';const d=Object.assign({},c,{'회사명':g('ec-n'),'소재지':g('ec-a'),'전화번호':g('ec-t'),'업종':g('ec-i'),'직종':g('ec-j'),'근무일수':g('ec-wd'),'모집인원':g('ec-h'),'임금(만원/월)':g('ec-s'),'채용마감일':g('ec-d'),'담당자성명':g('ec-cn'),'담당자이메일':g('ec-ce')});try{const r=await api({action:'updateCompany',token:adminToken,row,data:{name:d['회사명'],bizno:d['사업자등록번호'],address:d['소재지'],ceo:d['대표자'],tel:d['전화번호'],web:d['홈페이지'],year:d['설립년도'],type:d['기업구분'],industry:d['업종'],biz:d['사업내용'],capital:d['자본금(만원)'],revenue:d['매출액(만원)'],workers:d['근로자수'],salary:d['임금(만원/월)'],hours:d['근무시간'],workdays:d['근무일수'],insurance:d['보험사항'],welfare:d['복리후생'],job:d['직종'],headcount:d['모집인원'],emptype:d['고용형태'],deadline:d['채용마감일'],req:d['우대사항'],contactName:d['담당자성명'],contactTel:d['담당자전화'],contactEmail:d['담당자이메일']}});if(r.ok){closeModal('edit-modal');loadCompanies();alert('✅ 수정되었습니다.');}else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+function editStudent(idx){const s=studentsData[idx];document.getElementById('edit-modal-title').textContent=s['성명(한국어)']+' 수정';const flds=[['성명(한국어)','es-nk'],['성명(영문)','es-ne'],['학과','es-d'],['재학상태','es-st'],['졸업예정일','es-gd'],['현재비자상태','es-v'],['한국어(TOPIK)','es-tk'],['영어능력','es-en'],['희망직종','es-j'],['희망근무지역','es-l'],['보유자격증','es-c'],['자기소개','es-i']];let html='<div class="fgrid" style="gap:10px;">';flds.forEach(([l,id])=>{html+=`<div class="field"><label>${l}</label><input type="text" id="${id}" value="${s[l]||''}"></div>`;});html+=`</div><div style="display:flex;gap:10px;margin-top:14px;"><button class="btn-s" style="flex:1;" onclick="closeModal('edit-modal')">취소</button><button class="btn-p" style="flex:1;" onclick="saveS(${idx},${s._row})"><i class="ti ti-device-floppy"></i> 저장</button></div>`;document.getElementById('edit-modal-body').innerHTML=html;document.getElementById('edit-modal').classList.add('open');}
+async function saveS(idx,row){const s=studentsData[idx],g=id=>document.getElementById(id)?.value||'';const d=Object.assign({},s,{'성명(한국어)':g('es-nk'),'성명(영문)':g('es-ne'),'학과':g('es-d'),'재학상태':g('es-st'),'졸업예정일':g('es-gd'),'현재비자상태':g('es-v'),'한국어(TOPIK)':g('es-tk'),'영어능력':g('es-en'),'희망직종':g('es-j'),'희망근무지역':g('es-l'),'보유자격증':g('es-c'),'자기소개':g('es-i')});try{const r=await api({action:'updateStudent',token:adminToken,row,data:{nameKo:d['성명(한국어)'],nameEn:d['성명(영문)'],nation:d['국적'],birth:d['생년월일'],tel:d['연락처'],email:d['이메일'],dept:d['학과'],status:d['재학상태'],gradDate:d['졸업예정일'],gpa:d['학점'],topik:d['한국어(TOPIK)'],english:d['영어능력'],lang:d['기타언어'],cert:d['보유자격증'],skills:d['기술및역량'],visa:d['현재비자상태'],job:d['희망직종'],loc:d['희망근무지역'],salary:d['희망급여(만원/월)'],avail:d['취업가능시기'],intro:d['자기소개'],photoUrl:d['사진URL']||''}});if(r.ok){closeModal('edit-modal');loadStudents();alert('✅ 수정되었습니다.');}else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+
+// 관리자 계정
+async function loadAdmins(){document.getElementById('admin-list').innerHTML='<div class="loading">로딩 중...</div>';try{const r=await api({action:'getAdmins',token:adminToken});if(r.ok){document.getElementById('admin-list').innerHTML=r.data.map(a=>`<div class="acct-card"><div><div style="font-size:14px;font-weight:600;"><i class="ti ti-user-shield" style="margin-right:5px;"></i>${a.name} <span class="tag t-b" style="margin-left:4px;">${a.role}</span></div><div style="font-size:12px;color:var(--text2);margin-top:2px;">ID: ${a.id} · ${a.email}</div></div><button class="btn-sm bsm-r" onclick="delAdmin(${a._row},'${a.id}')"><i class="ti ti-trash"></i></button></div>`).join('')||'<div class="empty">등록된 관리자가 없습니다.</div>';}  }catch(e){document.getElementById('admin-list').innerHTML='<div class="empty">'+e.message+'</div>';}}
+function openAddAdminModal(){document.getElementById('addadmin-modal').classList.add('open');}
+async function addAdmin(){const id=document.getElementById('na-id').value.trim(),pw=document.getElementById('na-pw').value;if(!id||!pw){alert('아이디와 비밀번호는 필수입니다.');return;}try{const r=await api({action:'addAdmin',token:adminToken,id,password:pw,name:document.getElementById('na-name').value,email:document.getElementById('na-email').value});if(r.ok){closeModal('addadmin-modal');loadAdmins();alert('✅ 추가되었습니다.');}else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+async function delAdmin(row,id){if(!confirm(`"${id}" 계정을 삭제하시겠습니까?`))return;try{const r=await api({action:'deleteAdmin',token:adminToken,row});if(r.ok)loadAdmins();else alert('오류: '+r.error);}catch(e){alert('오류: '+e.message);}}
+
+// 이미지 카드 다운로드
+function downloadCard(type,idx){
+  const d=type==='company'?companiesData[idx]:studentsData[idx];
+  const wrap=document.getElementById('card-canvas-wrap');
+  let rows=[],title='',sub='',color='';
+  if(type==='company'){title=d['회사명']||'';sub=`${d['기업구분']||''} · ${d['업종']||''}`;color='#1a5fa8';rows=[['소재지',d['소재지']||'-'],['설립년도',(d['설립년도']||'-')+'년'],['직종',d['직종']||'-'],['모집인원',(d['모집인원']||'-')+'명'],['임금',(d['임금(만원/월)']||'-')+'만원/월'],['근무시간',d['근무시간']||'-'],['근무일수',d['근무일수']||'-'],['채용마감',d['채용마감일']||'-'],['담당자',`${d['담당자성명']||''} · ${d['담당자이메일']||''}`]];}
+  else{title=`${d['성명(한국어)']||''} (${d['성명(영문)']||''})`;sub=`${d['국적']||''} · ${d['학과']||''} · ${d['재학상태']||''}`;color='#1a7a4a';const photo=d['사진URL']?`<img src="${d['사진URL']}" style="width:80px;height:100px;object-fit:cover;border-radius:6px;border:2px solid rgba(255,255,255,.4);float:right;margin-left:12px;">`:'';rows=[['비자',d['현재비자상태']||'-'],['TOPIK',d['한국어(TOPIK)']||'없음'],['영어',d['영어능력']||'-'],['자격증',d['보유자격증']||'-'],['희망직종',d['희망직종']||'-'],['희망급여',(d['희망급여(만원/월)']||'-')+'만원/월'],['자기소개',d['자기소개']||'-']];}
+  const photo2=type==='student'&&d['사진URL']?`<img src="${d['사진URL']}" style="width:80px;height:100px;object-fit:cover;border-radius:6px;border:2px solid rgba(255,255,255,.4);float:right;margin-left:12px;">`:'';
+  const rh=rows.map(([k,v])=>`<tr><td style="padding:6px 10px;width:90px;color:#666;font-size:12px;border-bottom:0.5px solid #eee;vertical-align:top;">${k}</td><td style="padding:6px 10px;font-size:12px;color:#222;border-bottom:0.5px solid #eee;">${v}</td></tr>`).join('');
+  wrap.innerHTML=`<div style="background:#fff;border:1px solid #e0e0e0;border-radius:12px;overflow:hidden;font-family:sans-serif;width:660px;"><div style="background:${color};padding:18px 20px 14px;overflow:hidden;">${photo2}<div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;">${title}</div><div style="font-size:13px;color:rgba(255,255,255,.8);">${sub}</div><div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:8px;">경기과학기술대학교 외국인 유학생 취업연계 시스템 · ${new Date().toLocaleDateString('ko-KR')}</div></div><table style="width:100%;border-collapse:collapse;">${rh}</table></div>`;
+  html2canvas(wrap.firstElementChild,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff'}).then(canvas=>{const link=document.createElement('a');link.download=`GTEC_${type==='company'?'기업':'학생'}_${title.replace(/\s/g,'_')}.png`;link.href=canvas.toDataURL('image/png');link.click();wrap.innerHTML='';});
+}
+
+// 유틸
+function copyURL(type){const base=window.location.href.split('#')[0];const map={company:'#reg-company',student:'#reg-student',myinfo:'#myinfo'};navigator.clipboard.writeText(base+(map[type]||'')).then(()=>{const t=document.getElementById('copy-toast');t.style.display='block';setTimeout(()=>{t.style.display='none';},2500);});}
+function resetForm(type){
+  if(type==='company'){['c-name','c-bizno','c-address','c-ceo','c-tel','c-web','c-year','c-industry','c-biz','c-capital','c-revenue','c-workers','c-salary','c-hours','c-insurance','c-welfare','c-job','c-headcount','c-deadline','c-req','c-cname','c-ctel','c-cemail','c-pw','c-pw2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('c-consent').checked=false;document.querySelector('input[name="c-workdays"][value="주5일"]').checked=true;document.getElementById('workdays-custom').style.display='none';}
+  else{['s-nameko','s-nameen','s-birth','s-tel','s-email','s-dept','s-gpa','s-lang','s-cert','s-skills','s-job','s-loc','s-salary','s-avail','s-intro','s-pw','s-pw2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});['s-nation','s-topik','s-english','s-visa'].forEach(id=>{document.getElementById(id).value='';});document.getElementById('s-status').value='재학';document.getElementById('reg-gd-wrap').style.display='none';['s-consent1','s-consent2','s-consent3'].forEach(id=>{document.getElementById(id).checked=false;});removePhoto();}
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+</script>
+</body>
+</html>
